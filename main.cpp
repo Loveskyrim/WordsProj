@@ -10,21 +10,21 @@ bp::child start_child(std::string exec)
     args.push_back(exec);
     bp::context ctx;
     ctx.stdout_behavior = bp::capture_stream();
-    ctx.stdin_behavior = bp::capture_stream();
+    
     return bp::launch(exec, args, ctx);
 }
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2) return 0;
+    if (argc != 2) throw std::invalid_argument ("wrong number of arguments");
 
     bp::child child = start_child(argv[1]);
     bp::pistream &is = child.get_stdout();
-    bp::postream &os = child.get_stdin();
+
     std::string line;
     std::regex str("\\S+\\s*");
     std::smatch match;
-    int w_counter = 0;
+    auto w_counter = 0;
     while (std::getline(is, line))
     {
         while (std::regex_search(line, match, str))
